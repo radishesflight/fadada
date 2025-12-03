@@ -1,0 +1,25 @@
+{
+  "name": "radishesflight/fadada",
+  "description": "fadada",
+  "type": "library",
+  "keywords": [
+    "fadada"
+  ],
+  "require": {
+    "php": ">=7.4",
+    "guzzlehttp/guzzle": "8.0.x-dev"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "radishesflight",
+      "email": "aradishesflight@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "RadishesFlight\\Fadada\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}
