@@ -1,10 +1,11 @@
 <?php
 
-use GuzzleHttp\Exception\GuzzleException;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$obj = (new \RadishesFlight\Fadada\Sign())->init();
+$obj = new \RadishesFlight\Fadada\Sign('https://dss-uat.fadada.com',335850,
+    'ZgHPsKDXxUyvI151vbtoXsoT412v8wbx',
+    'm6kBfoE5GfqJABTAWMnqqN8N1faarRIF');
 
 //企业认证
 $clientId = '135811000660772953';
@@ -13,7 +14,7 @@ $corpUnifiedIdentifier = '91620111399342191T';
 $legalRepName = '萧粞啧';
 $certAlg = 'SM2';
 try {
-    $company = $obj->raCompany('https://dss-uat.fadada.com/api/zxca/ra/cert/apply/company', $clientId, $corpFullName, $corpUnifiedIdentifier, $legalRepName, $certAlg);
+    $company = $obj->raCompany('/api/zxca/ra/cert/apply/company', $clientId, $corpFullName, $corpUnifiedIdentifier, $legalRepName, $certAlg);
     print_r($company);
 } catch (\GuzzleHttp\Exception\GuzzleException $e) {
 
@@ -31,7 +32,7 @@ $sealTag = 'corp';
 $sealName = '法大豸合同章';
 //制作印章
 try {
-    $seal = $obj->sealCompany('https://dss-uat.fadada.com/api/seal/create/company', $sealStyle, $sealText, $sealSize, $sealColor, $sealHorizontalText, $sealBottomText, $sealTag, $sealName, $clientId);
+    $seal = $obj->sealCompany('/api/seal/create/company', $sealStyle, $sealText, $sealSize, $sealColor, $sealHorizontalText, $sealBottomText, $sealTag, $sealName, $clientId);
     print_r($seal);
 
 } catch (\GuzzleHttp\Exception\GuzzleException $e) {
@@ -45,7 +46,7 @@ $fileUrl = '';
 $fileName = '1.pdf';
 
 try {
-    $fileResponse = $obj->upload('https://dss-uat.fadada.com/api/file/upload', $file, $fileUrl, $fileName);
+    $fileResponse = $obj->upload('/api/file/upload', $file, $fileUrl, $fileName);
     print_r($fileResponse);
 
 } catch (\GuzzleHttp\Exception\GuzzleException $e) {
@@ -54,23 +55,23 @@ print_r($e->getMessage());
 exit();
 
 $clientId = '135811000660772952';
-$person = $obj->person('https://dss-uat.fadada.com/api/zxca/interface/cert/apply/person', $clientId, '1821810336186871808');
+$person = $obj->person('/api/zxca/interface/cert/apply/person', $clientId, '1821810336186871808');
 //$transactionId= $person['data']['transactionId'];
 $transactionId = '15431789235962404408';
 
 
-$face = $obj->face('https://dss-uat.fadada.com/api/zxca/interface/cert/face/url', $transactionId, '杜星宇', 'identity_card', '511321199109298075');
+$face = $obj->face('/api/zxca/interface/cert/face/url', $transactionId, '杜星宇', 'identity_card', '511321199109298075');
 //print_r($face);exit();
 
 
-//$person=$obj->ocr('https://dss-uat.fadada.com/api/zxca/interface/cert/photo/ocr',$transactionId,);
+//$person=$obj->ocr('/api/zxca/interface/cert/photo/ocr',$transactionId,);
 //print_r($person);exit();
 //
 
 //$operatorUserTransactionId= $person['data']['transactionId'];
 $operatorUserTransactionId = '15431789235962404408';
 
-$company = $obj->company('https://dss-uat.fadada.com/api/zxca/interface/cert/apply/company', $operatorUserTransactionId, '1900512338407194624');
+$company = $obj->company('/api/zxca/interface/cert/apply/company', $operatorUserTransactionId, '1900512338407194624');
 print_r($company);
 exit();
 

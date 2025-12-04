@@ -57,7 +57,7 @@ class Sign
         return trim($Str, "&");
     }
 
-    public function doPostFile($url, $postFields,$headers = null)
+    public function doPostFile($url, $postFields, $headers = null)
     {
         $client = new Client(['timeout' => 600]);
         $response = $client->request(
@@ -135,14 +135,16 @@ class Sign
     }
 
 
-    public function init()
+    public function __construct($host, $app_id, $app_secret, $performance_key)
     {
+
         $this->data = [
-            'app_id' => '335850',
-            'app_secret' => 'ZgHPsKDXxUyvI151vbtoXsoT412v8wbx',
-            'performance_key' => 'm6kBfoE5GfqJABTAWMnqqN8N1faarRIF',
+            'host' => $host,
+            'app_id' => $app_id,
+            'app_secret' => $app_secret,
+            'performance_key' => $performance_key,
         ];
-        return new self();
+        return $this;
     }
 
 
@@ -343,6 +345,7 @@ class Sign
      */
     public function raCompany($url, $clientId, $corpFullName, $corpUnifiedIdentifier, $legalRepName, $certAlg = 'SM2')
     {
+        $url = $this->data['host'] . $url;
         $selfStreamSignData['clientId'] = $clientId;
         $selfStreamSignData['corpFullName'] = $corpFullName;
         $selfStreamSignData['corpUnifiedIdentifier'] = $corpUnifiedIdentifier;
@@ -389,6 +392,7 @@ class Sign
      */
     public function sealCompany($url, $sealStyle, $sealText, $sealSize, $sealColor, $sealHorizontalText, $sealBottomText, $sealTag, $sealName, $clientId)
     {
+        $url = $this->data['host'] . $url;
         $selfStreamSignData['clientId'] = $clientId;
         $selfStreamSignData['sealStyle'] = $sealStyle;
         $selfStreamSignData['sealText'] = $sealText;
@@ -410,7 +414,7 @@ class Sign
      * @return mixed|string
      * @throws Exception
      */
-    public function upload($url, $file, $fileUrl,$fileName)
+    public function upload($url, $file, $fileUrl, $fileName)
     {
         if (empty($fileUrl)) {
             $postFields = [   //设置
