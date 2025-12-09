@@ -14,38 +14,6 @@ class Sign
         'performance_key' => 'm6kBfoE5GfqJABTAWMnqqN8N1faarRIF',
     ];
 
-    public $signFileData = [
-        'transactionId' => '',//业务自定义签署交易号，最大长度64位,字符范围为[a-zA-Z0-9]
-        'fileId' => '', //文件在本地电子签系统的唯一识别标识
-        'useCopy' => true, //是否使用副本。false（默认）: 在源文件上操作； true: 创建一个文件副本，并在副本上操作，源文件保持不变 。
-        'sealInfos' => [
-            [
-                'sealId' => '', //印章ID 个人签名或者企业印章章面
-                'certificateId' => '', //证书编号 个人或企业证书唯一识别标识
-                'ruleType' => 'location',//盖章方式：location：按照传递的坐标信息签章；keyword：按照文字查找签章；signField：按照签名域签章；
-                'locateCoordinates' => [
-                    [
-                        'pageNum' => 1, //签章页码
-                        'x' => 200,//签章x轴，以页面左上角为原点开始计算，正数向右，负数无效
-                        'y' => 200,//签章y轴，以页面左上角为原点开始计算，正数向下，负数无效
-                    ],
-                ],//签章坐标列表；ruleType=location不能为空
-            ],
-        ], //支持传入多组不同位置的个人或企业签章
-        'acrossSealInfos' => [
-            [
-                'sealId' => '',//个人签名或者企业印章章面
-                'certificateId' => '',//个人或企业证书唯一识别标识
-                'pageType' => 'all',//骑缝章应用页面，all：全部页面；odd：奇数页面，even：偶数页面，custom：自定义区间
-                'acrossSealY' => '200',//骑缝章盖章y坐标，当选择加盖骑缝章时，传了y坐标则在指定的签署位置上加盖骑缝章，没传y坐标则自适应加盖骑缝章
-            ],
-        ], //详见骑缝章信息
-        'coordinateInfo' => [
-            'coordSpec' => 800, //坐标参考系。不同的分辨率影响文件的清晰度以及坐标参考系。800px（默认）：以分辨率为96时，A4纸宽21厘米=800px作为文档参考系。595px：以分辨率为72时，A4纸宽21厘米=595px作为文档参考系。
-            'coordOrigin' => 'left_top', //坐标原点。left_top：左上（默认）；left_bottom：左下
-        ], //自定义坐标参考系信息。
-    ];
-
     //签署（application/json）调用签名Demo
     public function userStreamSignAuto($transactionId, $fileId, $sealInfos, $acrossSealInfos = [])
     {
@@ -338,6 +306,7 @@ class Sign
      * @param string $corpFullName 企业全称
      * @param string $corpUnifiedIdentifier 企业编码
      * @param string $legalRepName 法人名称
+     * @param string $planId 方案id
      * @param string $certAlg 证书密钥对算法
      * @return mixed|string
      * {
@@ -375,14 +344,16 @@ class Sign
      * @throws GuzzleException
      * RA-企业证书申请
      */
-    public function raCompany($url, $clientId, $corpFullName, $corpUnifiedIdentifier, $legalRepName, $certAlg = 'SM2')
+    public function raCompany($url, $clientId, $corpFullName, $corpUnifiedIdentifier, $legalRepName, $planId = '', $certAlg = 'SM2')
     {
         $url = $this->data['host'] . $url;
         $selfStreamSignData['clientId'] = $clientId;
         $selfStreamSignData['corpFullName'] = $corpFullName;
         $selfStreamSignData['corpUnifiedIdentifier'] = $corpUnifiedIdentifier;
         $selfStreamSignData['legalRepName'] = $legalRepName;
+        $selfStreamSignData['planId'] = $planId;
         $selfStreamSignData['certAlg'] = $certAlg;
+        $selfStreamSignData = array_filter($selfStreamSignData);
         return $this->doPost($url, $selfStreamSignData);
     }
 
@@ -448,7 +419,6 @@ class Sign
      */
     public function upload($url, $file, $fileUrl, $fileName)
     {
-        $url = $this->data['host'] . $url;
         if (empty($fileUrl)) {
             $postFields = [   //设置
                 [
@@ -483,17 +453,4 @@ class Sign
         $headers['X-DSS-Sign'] = self::signature($Timestamp, $this->data['app_secret'], $headers);
         return self::doPostFile($url, $postFields, $headers);
     }
-
-
-    public function setSignFileData($filed, $value)
-    {
-        $this->signFileData[$filed] = $value;
-    }
-
-    public function signFile($url)
-    {
-        $url = $this->data['host'] . $url;
-        return $this->doPost($url, $this->signFileData);
-    }
-
 }
